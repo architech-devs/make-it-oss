@@ -1,15 +1,10 @@
-import express from 'express';
-import cors from 'cors';
+import app from "./src/app.js";
+import { PORT } from "./src/config/env.js";
 
-const app = express();
-const PORT = 3000;
+export default app;
 
-app.use(cors());
-
-app.get('/', (req, res) => {
-    res.json({ message: 'Hello from Express with CORS!' });
-});
-
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== "production") {
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running locally at http://localhost:${PORT}`);
+  });
+}
