@@ -12,8 +12,7 @@
     "format": "prettier --write .",
     "check-format": "prettier --check .",
     "test": "jest --runInBand",
-    "test:watch": "jest --watchAll",
-    "prepare": "husky install"
+    "test:watch": "jest --watchAll"
   },
   "keywords": [
     "open-source",
@@ -24,9 +23,11 @@
   "author": "Architech",
   "license": "MIT",
   "dependencies": {
+    "@google/generative-ai": "^0.12.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
+    "octokit": "^4.0.0",
     "winston": "^3.17.0"
   },
   "devDependencies": {
