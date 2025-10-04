@@ -1,4 +1,5 @@
-import { getSystemExplanationPrompt, getComponentMappingPrompt, runGemini } from '../services/geminiService.js';
+import { GeminiResponse } from '../services/geminiService.js';
+import { getSystemExplanationPrompt, getComponentMappingPrompt } from '../utils/prompt.js';
 import { getOctokitInstance, fetchFiles } from '../services/githubService.js';
 
 export const scanProject = async (req, res) => {
@@ -24,10 +25,10 @@ export const scanProject = async (req, res) => {
             }
 
             const step1Prompt = getSystemExplanationPrompt(fileTree, codeSamples);
-            const explanation = await runGemini(step1Prompt);
+            const explanation = await GeminiResponse(step1Prompt);
 
             const step2Prompt = getComponentMappingPrompt(explanation, fileTree);
-            const componentMap = await runGemini(step2Prompt);
+            const componentMap = await GeminiResponse(step2Prompt);
 
             res.json({ success: true, summary: explanation, componentMapping: componentMap, repoUrl: repoUrl });
 
@@ -64,7 +65,7 @@ export const executeTask = async (req, res) => {
     
     try {
         const prompt = `Based on the following message and operation, generate content: Message: ${message}, Operation: ${operation}`;
-        const result = await runGemini(prompt);
+        const result = await GeminiResponse(prompt);
         res.json({ success: true, result: result });
     } catch (error) {
         console.error('Execute task failed:', error);
