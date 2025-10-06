@@ -72,3 +72,80 @@ export const executeTask = async (req, res) => {
         res.status(500).json({ success: false, message: 'Failed to execute task' });
     }
 };
+
+export const fetchCommunityFiles = async (req, res) => {
+    console.log('🔍 Fetch files called, body:', req.body);
+    const { repoUrl } = req.body;
+
+    if (!repoUrl || !repoUrl.includes('github.com')) {
+        return res.status(400).json({ message: 'Invalid GitHub repository URL' });
+    }
+
+    try {
+        const [owner, repoRaw] = repoUrl.split('github.com/')[1].split('/');
+        const repo = repoRaw.replace(/\.git$/, '').replace(/\/$/, '');
+
+        const octokit = await getOctokitInstance();
+
+        // List of community guideline files to check
+        const communityFiles = [
+            'README.md',
+            'CONTRIBUTING.md',
+            'CODE_OF_CONDUCT.md',
+            'LICENSE',
+            'LICENSE.md',
+            'LICENSE.txt',
+            '.github/PULL_REQUEST_TEMPLATE.md',
+            '.github/ISSUE_TEMPLATE.md',
+            '.github/ISSUE_TEMPLATE/bug_report.md',
+            '.github/ISSUE_TEMPLATE/feature_request.md'
+        ];
+
+        const detectedFiles = [];
+
+        // Check each file
+        for (const filePath of communityFiles) {
+            try {
+                await octokit.rest.repos.getContent({
+                    owner,
+                    repo,
+                    path: filePath
+                });
+                // If no error, file exists
+                detectedFiles.push({
+                    name: filePath,
+                    exists: true
+                });
+            } catch (error) {
+                // File doesn't exist
+                if (error.status === 404) {
+                    detectedFiles.push({
+                        name: filePath,
+                        exists: false
+                    });
+                }
+            }
+        }
+
+        res.json({
+            success: true,
+            files: detectedFiles,
+            repoUrl: repoUrl
+        });
+
+    } catch (err) {
+        console.error('Failed to fetch community files:', err);
+        let errorMessage = 'Failed to fetch community files';
+        
+        if (err.status === 404) {
+            errorMessage = 'Repository not found. Please check the URL.';
+        } else if (err.status === 403) {
+            errorMessage = 'Repository is private or access denied.';
+        }
+        
+        res.status(500).json({
+            success: false,
+            message: errorMessage
+        });
+    }
+};
