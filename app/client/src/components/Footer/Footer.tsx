@@ -10,7 +10,7 @@ const Footer = () => {
         |
         <Link to="https://discord.gg/r9jzAFU3FM"><img src={Discord_logo} alt="" className="w-4 h-4" /></Link>
         |
-        <img src={Github_logo} alt="" className="w-4 h-4 dark:invert" />
+        <Link to="https://github.com/architech-devs/make-it-oss"><img src={Github_logo} alt="" className="w-4 h-4 dark:invert" /></Link>
       </div>
       <Link
         to="https://github.com/architech-devs"
