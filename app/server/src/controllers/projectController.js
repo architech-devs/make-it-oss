@@ -1,6 +1,7 @@
 import { GeminiResponse } from '../services/geminiService.js';
 import { getSystemExplanationPrompt, getComponentMappingPrompt } from '../utils/prompt.js';
 import { getOctokitInstance, fetchFiles } from '../services/githubService.js';
+import { getCommunityFilePaths } from '../utils/communityFiles.js';
 
 export const scanProject = async (req, res) => {
     const { repoUrl } = req.body;
@@ -87,19 +88,8 @@ export const fetchCommunityFiles = async (req, res) => {
 
         const octokit = await getOctokitInstance();
 
-        // List of community guideline files to check
-        const communityFiles = [
-            'README.md',
-            'CONTRIBUTING.md',
-            'CODE_OF_CONDUCT.md',
-            'LICENSE',
-            'LICENSE.md',
-            'LICENSE.txt',
-            '.github/PULL_REQUEST_TEMPLATE.md',
-            '.github/ISSUE_TEMPLATE.md',
-            '.github/ISSUE_TEMPLATE/bug_report.md',
-            '.github/ISSUE_TEMPLATE/feature_request.md'
-        ];
+        // Get community files to check from the config
+        const communityFiles = getCommunityFilePaths();
 
         const detectedFiles = [];
 
