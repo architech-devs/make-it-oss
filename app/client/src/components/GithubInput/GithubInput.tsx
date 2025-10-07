@@ -1,9 +1,18 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, Loader2 } from "lucide-react"
+import FileChecklist from "@/components/FileChecklist/FileChecklist"
+
+interface FileStatus {
+    name: string
+    exists: boolean
+}
 
 const GithubInput = () => {
     const [repo, setRepo] = useState("")
+    const [loading, setLoading] = useState(false)
+    const [files, setFiles] = useState<FileStatus[] | null>(null)
+    const [error, setError] = useState("")
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value.trim()
@@ -14,10 +23,49 @@ const GithubInput = () => {
         } else {
             setRepo(value) // fallback to raw input
         }
+        // Clear previous results when user types
+        setFiles(null)
+        setError("")
+    }
+
+    const handleSubmit = async () => {
+        if (!repo) {
+            setError("Please enter a repository URL")
+            return
+        }
+
+        setLoading(true)
+        setError("")
+        setFiles(null)
+
+        try {
+            const repoUrl = `https://github.com/${repo}`
+            
+            const response = await fetch('http://localhost:5000/api/project/fetch-files', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ repoUrl })
+            })
+
+            const data = await response.json()
+
+            if (data.success) {
+                setFiles(data.files)
+            } else {
+                setError(data.message || "Failed to fetch files")
+            }
+        } catch (err) {
+            setError("Failed to connect to server. Please try again.")
+            console.error('Error:', err)
+        } finally {
+            setLoading(false)
+        }
     }
 
     return (
-        <div className="flex flex-col space-y-2 md:px-0 px-4">
+        <div className="flex flex-col space-y-4 md:px-0 px-4">
             <div className="border p-4 rounded-2xl flex items-center md:text-2xl text-md justify-between">
                 <div>
                     github.com/
@@ -25,17 +73,31 @@ const GithubInput = () => {
                         type="text"
                         value={repo}
                         onChange={handleChange}
+                        onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
                         className="outline-none md:w-[60%] w-[50%]"
                         placeholder="username/repo"
+                        disabled={loading}
                     />
                 </div>
-                <Button variant="ghost">
-                    <ArrowRight />
+                <Button 
+                    variant="ghost" 
+                    onClick={handleSubmit}
+                    disabled={loading}
+                >
+                    {loading ? <Loader2 className="animate-spin" /> : <ArrowRight />}
                 </Button>
             </div>
             <span className="text-xs text-center text-muted-foreground">
                 enter your github repo to get started
             </span>
+
+            {error && (
+                <div className="border border-red-600 bg-red-600/10 rounded-2xl p-4 text-sm text-red-600 dark:text-red-400">
+                    {error}
+                </div>
+            )}
+
+            {files && <FileChecklist files={files} />}
         </div>
     )
 }
