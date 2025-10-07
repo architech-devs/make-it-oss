@@ -3,7 +3,7 @@ import logger from './logger.js';
 
 dotenv.config();
 
-const required = ['PORT', 'NODE_ENV'];
+const required = [];
 
 required.forEach((key) => {
   if (!process.env[key]) {
