@@ -2,11 +2,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Loader2 } from "lucide-react"
 import FileChecklist from "@/components/FileChecklist/FileChecklist"
-
-interface FileStatus {
-    name: string
-    exists: boolean
-}
+import { fetchRepoFiles, type FileStatus } from "@/utils/api"
 
 const GithubInput = () => {
     const [repo, setRepo] = useState("")
@@ -40,18 +36,9 @@ const GithubInput = () => {
 
         try {
             const repoUrl = `https://github.com/${repo}`
-            
-            const response = await fetch('http://localhost:5000/api/project/fetch-files', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ repoUrl })
-            })
+            const data = await fetchRepoFiles(repoUrl)
 
-            const data = await response.json()
-
-            if (data.success) {
+            if (data.success && data.files) {
                 setFiles(data.files)
             } else {
                 setError(data.message || "Failed to fetch files")
