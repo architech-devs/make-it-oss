@@ -4,6 +4,7 @@ import cors from "cors";
 import apiRoutes from "./routes/index.js";
 import healthRoutes from "./routes/health.js";
 
+
 const app = express();
 
 app.use(cors());
