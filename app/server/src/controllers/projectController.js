@@ -7,22 +7,23 @@ export const scanProject = async (req, res) => {
     const { repoUrl } = req.body;
 
     if (!repoUrl || !repoUrl.includes('github.com')) {
-        return res.status(400).json({ message: 'Invalid GitHub repository URL' });
+        return res.status(400).json({ message: 'Invalid GitHub repository URL. Make sure it starts with https://github.com/' });
     }
 
     try {
         const [owner, repoRaw] = repoUrl.split('github.com/')[1].split('/');
         const repo = repoRaw.replace(/\.git$/, '').replace(/\/$/, '');
 
-        const octokit = await getOctokitInstance(); 
+        const octokit = await getOctokitInstance();
 
         try {
             const { data: repoData } = await octokit.rest.repos.get({ owner, repo });
             const defaultBranch = repoData.default_branch;
+
             const { fileTree, codeSamples } = await fetchFiles(octokit, owner, repo, defaultBranch);
 
             if (!codeSamples.trim()) {
-                return res.status(400).json({ success: false, message: 'No relevant code files found in the repository. Please ensure the repository contains source code files.' });
+                return res.status(400).json({ success: false, message: 'No relevant code files found in the repository. Ensure it contains source code files.' });
             }
 
             const step1Prompt = getSystemExplanationPrompt(fileTree, codeSamples);
@@ -34,29 +35,39 @@ export const scanProject = async (req, res) => {
             res.json({ success: true, summary: explanation, componentMapping: componentMap, repoUrl: repoUrl });
 
         } catch (repoError) {
+            // Handle 404 or 403 with clear notes
             if (repoError.status === 404) {
-                return res.status(404).json({ success: false, message: 'Repository not found or not accessible. Please check the URL and ensure the repository is public or you have access to it.' });
+                return res.status(404).json({
+                    success: false,
+                    message: 'Repository not found. Check that the URL is correct and the repository exists on GitHub.'
+                });
             } else if (repoError.status === 403) {
-                return res.status(403).json({ success: false, message: 'Repository is private and you don\'t have access. Please connect your GitHub account to access private repositories.' });
+                return res.status(403).json({
+                    success: false,
+                    message: 'Access denied. This repository is private or requires authentication. Connect your GitHub account or use a personal access token with access.'
+                });
             }
             throw repoError;
         }
 
     } catch (err) {
         console.error('Repository analysis failed:', err);
-        let errorMessage = 'Failed to analyze repository';
+        let errorMessage = 'Failed to analyze repository.';
         if (err.message.includes('Request Entity Too Large')) {
-            errorMessage = 'Repository too large to analyze. Please try with a smaller repository or fewer files.';
+            errorMessage = 'Repository too large to analyze. Try a smaller repository or fewer files.';
         } else if (err.message.includes('rate limit') || err.message.includes('quota exceeded')) {
-            errorMessage = 'API rate limit exceeded. Please try again later.';
+            errorMessage = 'GitHub API rate limit exceeded. Please try again later.';
         } else if (err.message.includes('authentication')) {
-            errorMessage = 'GitHub authentication failed. Please check your GitHub token.';
+            errorMessage = 'GitHub authentication failed. Check your GitHub token.';
         } else if (err.message.includes('All API keys are currently rate limited')) {
             errorMessage = 'All API keys are rate limited. Please try again later.';
         }
         res.status(500).json({ success: false, message: errorMessage });
     }
 };
+
+/* Duplicate fetchCommunityFiles removed. */
+
 
 export const executeTask = async (req, res) => {
     const { message, operation } = req.body;
