@@ -1,0 +1,68 @@
+/* app/client/src/components/FileChecklist/FileChecklist.css */
+
+.file-checklist-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.file-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.file-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e2e8f0;
+  transition: background-color 0.2s;
+}
+
+.file-item:last-child {
+  border-bottom: none;
+}
+
+.file-item.missing:hover {
+  background-color: #f7fafc;
+}
+
+.file-item input[type="checkbox"] {
+  margin-right: 12px;
+  width: 16px;
+  height: 16px;
+}
+
+.file-item label {
+  cursor: pointer;
+}
+
+.file-item.present {
+  color: #718096;
+  background-color: #fdfdfe;
+}
+
+.file-item.present label {
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+
+.action-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background-color: #f7fafc;
+  border-top: 1px solid #e2e8f0;
+}
+
+/* On small screens, stack the button and text */
+@media (max-width: 480px) {
+  .action-footer {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
