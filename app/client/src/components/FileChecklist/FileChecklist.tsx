@@ -1,53 +1,83 @@
-import { CheckCircle2, XCircle } from "lucide-react"
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import './FileChecklist.css';
 
-interface FileChecklistProps {
-    files: Array<{
-        name: string
-        exists: boolean
-    }>
+// Define the structure for a file object
+interface OssFile {
+  name: string;
+  isMissing: boolean;
 }
 
-const FileChecklist = ({ files }: FileChecklistProps) => {
-    const existingFiles = files.filter(f => f.exists)
-    const missingFiles = files.filter(f => !f.exists)
+// Mock data: In a real app, this would come from props or an API.
+const initialFiles: OssFile[] = [
+  { name: 'README.md', isMissing: false },
+  { name: 'CONTRIBUTING.md', isMissing: true },
+  { name: 'LICENSE', isMissing: true },
+  { name: 'CODE_OF_CONDUCT.md', isMissing: false },
+  { name: '.gitignore', isMissing: true },
+];
 
-    return (
-        <div className="border rounded-2xl p-6 space-y-4">
-            <h3 className="text-xl font-semibold">Community Guidelines Status</h3>
-            
-            {existingFiles.length > 0 && (
-                <div className="space-y-2">
-                    <h4 className="text-sm font-medium text-green-600 dark:text-green-400">
-                        ✓ Found ({existingFiles.length})
-                    </h4>
-                    <ul className="space-y-2">
-                        {existingFiles.map((file) => (
-                            <li key={file.name} className="flex items-center gap-2 text-sm">
-                                <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
-                                <span>{file.name}</span>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            )}
+export const FileChecklist: React.FC = () => {
+  const [files] = useState<OssFile[]>(initialFiles);
+  const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
 
-            {missingFiles.length > 0 && (
-                <div className="space-y-2">
-                    <h4 className="text-sm font-medium text-red-600 dark:text-red-400">
-                        ✗ Missing ({missingFiles.length})
-                    </h4>
-                    <ul className="space-y-2">
-                        {missingFiles.map((file) => (
-                            <li key={file.name} className="flex items-center gap-2 text-sm opacity-60">
-                                <XCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
-                                <span>{file.name}</span>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            )}
-        </div>
-    )
-}
+  // Handles changes to any checkbox
+  const handleCheckboxChange = (fileName: string) => {
+    setSelectedFiles(prevSelected => {
+      const newSelected = new Set(prevSelected);
+      if (newSelected.has(fileName)) {
+        newSelected.delete(fileName);
+      } else {
+        newSelected.add(fileName);
+      }
+      return newSelected;
+    });
+  };
 
-export default FileChecklist
+  // Handles the final submission button click
+  const handleSubmit = () => {
+    const payload = Array.from(selectedFiles);
+    console.log('Making it OSS with:', payload);
+    // In a real scenario, you would call your API here
+    // e.g., createOssFiles(payload);
+    alert(`Payload for downstream flow: ${payload.join(', ')}`);
+  };
+
+  // Determine if the button should be disabled
+  const isButtonDisabled = selectedFiles.size === 0;
+
+  return (
+    <div className="file-checklist-container">
+      <ul className="file-list">
+        {files.map((file) => (
+          <li
+            key={file.name}
+            // *** THIS IS THE CORRECTED LINE ***
+            // Use a template literal (backticks) to combine strings and expressions
+            className={`file-item ${!file.isMissing ? 'present' : 'missing'}`}
+          >
+            <input
+              type="checkbox"
+              id={file.name}
+              value={file.name}
+              checked={!file.isMissing || selectedFiles.has(file.name)}
+              disabled={!file.isMissing}
+              onChange={() => handleCheckboxChange(file.name)}
+            />
+            <label htmlFor={file.name}>{file.name}</label>
+          </li>
+        ))}
+      </ul>
+      <div className="action-footer">
+        <span>
+          {selectedFiles.size} file{selectedFiles.size !== 1 ? 's' : ''} selected
+        </span>
+        <Button onClick={handleSubmit} disabled={isButtonDisabled}>
+          Make it OSS
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+export default FileChecklist;
