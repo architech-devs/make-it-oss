@@ -82,14 +82,14 @@ const GithubInput = ({ onFilesReady, filesOnly, files: propFiles }: GithubInputP
     return (
         <div className="flex flex-col space-y-4 md:px-0 px-4">
             <div className="border p-4 rounded-2xl flex items-center md:text-2xl text-md justify-between">
-                <div>
+                <div className="flex w-full">
                     github.com/
                     <input
                         type="text"
                         value={repo}
                         onChange={handleChange}
                         onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-                        className="outline-none md:w-[60%] w-[50%]"
+                        className="outline-none w-full"
                         placeholder="username/repo"
                         disabled={loading}
                     />
