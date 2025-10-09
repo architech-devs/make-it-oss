@@ -1,4 +1,5 @@
 import { CheckCircle2, XCircle } from "lucide-react"
+import { useState, useEffect } from "react"
 
 interface FileChecklistProps {
     files: Array<{
@@ -8,11 +9,24 @@ interface FileChecklistProps {
 }
 
 const FileChecklist = ({ files }: FileChecklistProps) => {
+    const [isVisible, setIsVisible] = useState(false)
     const existingFiles = files.filter(f => f.exists)
     const missingFiles = files.filter(f => !f.exists)
 
+    useEffect(() => {
+        // Trigger animation on mount
+        const timer = setTimeout(() => setIsVisible(true), 50)
+        return () => clearTimeout(timer)
+    }, [])
+
     return (
-        <div className="border rounded-2xl p-6 space-y-4">
+        <div 
+            className={`border rounded-2xl p-6 space-y-4 transition-all duration-300 ease-out ${
+                isVisible 
+                    ? 'opacity-100 translate-y-0' 
+                    : 'opacity-0 -translate-y-4'
+            }`}
+        >
             <h3 className="text-xl font-semibold">Community Guidelines Status</h3>
             
             {existingFiles.length > 0 && (
