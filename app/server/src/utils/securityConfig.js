@@ -1,7 +1,7 @@
 export const rateLimits = {
     "/api/project/scan": {
-        windowMs: 10 * 1000, // 15 minutes
-        max: 3, 
+        windowMs: 15 * 60 * 1000, // 15 minutes
+        max: 10, 
         message: "Too many requests from this IP, please try again later."
     },
     "/api/showcase/submit": {
