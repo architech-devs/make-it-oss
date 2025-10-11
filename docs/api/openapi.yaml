@@ -1,0 +1,82 @@
+openapi: 3.0.3
+info:
+  title: Make-It-OSS API
+  description: |
+    OpenAPI documentation for the Make-It-OSS backend.
+    This API helps analyze and enhance open-source repositories.
+  version: 1.0.0
+  contact:
+    name: Architech Devs
+    url: https://github.com/architech-devs/make-it-oss
+servers:
+  - url: https://api.make-it-oss.architech.dev
+    description: Production
+  - url: http://localhost:3000
+    description: Local development
+
+paths:
+  /scan:
+    post:
+      summary: Analyze a GitHub repository
+      description: Accepts a GitHub repo URL and returns missing OSS essentials.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScanRequest'
+            example:
+              repo_url: "https://github.com/user/repo"
+      responses:
+        '200':
+          description: Successful analysis
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScanResult'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    ScanRequest:
+      type: object
+      properties:
+        repo_url:
+          type: string
+          description: GitHub repository URL
+      required:
+        - repo_url
+
+    ScanResult:
+      type: object
+      properties:
+        missing:
+          type: array
+          items:
+            type: string
+        suggestions:
+          type: object
+      example:
+        missing: ["LICENSE", "README"]
+        suggestions:
+          LICENSE: "Add an MIT License"
+          README: "Include installation steps"
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
