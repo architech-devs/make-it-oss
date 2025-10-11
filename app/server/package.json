@@ -30,6 +30,7 @@
     "mongodb": "^6.20.0",
     "mongoose": "^8.19.0",
     "octokit": "^4.0.0",
+    "swagger-ui-express": "^5.0.1",
     "winston": "^3.17.0"
   },
   "devDependencies": {
