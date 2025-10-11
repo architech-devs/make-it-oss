@@ -2,6 +2,7 @@ import { GeminiResponse } from '../services/geminiService.js';
 import { getSystemExplanationPrompt, getComponentMappingPrompt } from '../utils/prompt.js';
 import { getOctokitInstance, fetchFiles } from '../services/githubService.js';
 import { getCommunityFilePaths } from '../utils/communityFiles.js';
+import { analyzeRepository } from '../services/ossAnalysisService.js';
 
 export const scanProject = async (req, res) => {
     const { repoUrl } = req.body;
@@ -136,6 +137,50 @@ export const fetchCommunityFiles = async (req, res) => {
         res.status(500).json({
             success: false,
             message: errorMessage
+        });
+    }
+};
+
+/**
+ * Comprehensive OSS Readiness Analysis
+ * Uses the new comprehensive scoring system
+ */
+export const analyzeOSSReadiness = async (req, res) => {
+    console.log('🔍 OSS Readiness Analysis called, body:', req.body);
+    const { repoUrl } = req.body;
+
+    if (!repoUrl || !repoUrl.includes('github.com')) {
+        return res.status(400).json({ 
+            success: false, 
+            message: 'Invalid GitHub repository URL' 
+        });
+    }
+
+    try {
+        const report = await analyzeRepository(repoUrl);
+        
+        res.json({
+            success: true,
+            report: report,
+            repoUrl: repoUrl
+        });
+
+    } catch (err) {
+        console.error('Failed to analyze OSS readiness:', err);
+        let errorMessage = 'Failed to analyze repository OSS readiness';
+        
+        if (err.status === 404) {
+            errorMessage = 'Repository not found. Please check the URL.';
+        } else if (err.status === 403) {
+            errorMessage = 'Repository is private or access denied.';
+        } else if (err.message.includes('rate limit')) {
+            errorMessage = 'GitHub API rate limit exceeded. Please try again later.';
+        }
+        
+        res.status(500).json({
+            success: false,
+            message: errorMessage,
+            error: err.message
         });
     }
 };
