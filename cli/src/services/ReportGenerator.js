@@ -1,13 +1,28 @@
 import chalk from 'chalk';
+import { ScoringService } from './ScoringService.js';
 
 export class ReportGenerator {
   constructor(verbose = false) {
     this.verbose = verbose;
+    this.scoringService = new ScoringService();
   }
 
   generate(scanResults, aiAnalysis, analysisType) {
-    const ossReadiness = this.calculateOSSReadiness(scanResults, aiAnalysis);
-    const recommendations = this.generateRecommendations(scanResults, aiAnalysis);
+    // Use the new comprehensive scoring service
+    const comprehensiveReport = this.scoringService.generateReport(scanResults, aiAnalysis);
+    
+    // Keep backward compatibility with old structure while adding new scoring
+    const ossReadiness = {
+      score: comprehensiveReport.summary.overallScore,
+      maxScore: comprehensiveReport.summary.maxPoints,
+      readinessLevel: comprehensiveReport.summary.readinessLevel,
+      breakdown: {}
+    };
+    
+    // Convert category scores to old format for compatibility
+    Object.entries(comprehensiveReport.categories).forEach(([category, scores]) => {
+      ossReadiness.breakdown[category] = scores.earned;
+    });
 
     return {
       analysis: {
@@ -22,10 +37,11 @@ export class ReportGenerator {
           codeLines: scanResults.statistics.codeLines
         },
         ossReadiness,
+        comprehensiveScoring: comprehensiveReport, // Add the new comprehensive report
         findings: {
           found: scanResults.communityFiles.found,
           missing: scanResults.communityFiles.missing,
-          recommendations
+          recommendations: comprehensiveReport.recommendations
         },
         aiAnalysis: aiAnalysis || { summary: 'No AI analysis performed (offline mode)' },
         statistics: scanResults.statistics
@@ -34,102 +50,35 @@ export class ReportGenerator {
   }
 
   calculateOSSReadiness(scanResults, aiAnalysis) {
-    let score = 0;
-    const breakdown = {
-      documentation: 0,
-      community: 0,
-      legal: 0,
-      management: 0,
-      maintenance: 0
-    };
-
-    // Documentation (max 30 points)
-    const readme = scanResults.communityFiles.found.find(f => 
-      f.name.includes('README')
-    );
-    if (readme) {
-      if (readme.quality === 'excellent') breakdown.documentation = 30;
-      else if (readme.quality === 'good') breakdown.documentation = 20;
-      else if (readme.quality === 'basic') breakdown.documentation = 10;
-      else breakdown.documentation = 5;
-    }
-
-    // Legal (max 25 points)
-    const license = scanResults.communityFiles.found.find(f => 
-      f.name.includes('LICENSE')
-    );
-    if (license) {
-      breakdown.legal = license.quality === 'complete' ? 25 : 15;
-    }
-
-    // Community (max 25 points)
-    const contributing = scanResults.communityFiles.found.find(f => 
-      f.name.includes('CONTRIBUTING')
-    );
-    const codeOfConduct = scanResults.communityFiles.found.find(f => 
-      f.name.includes('CODE_OF_CONDUCT')
-    );
-    if (contributing) breakdown.community += 15;
-    if (codeOfConduct) breakdown.community += 10;
-
-    // Management (max 10 points)
-    const security = scanResults.communityFiles.found.find(f => 
-      f.name.includes('SECURITY')
-    );
-    if (security) breakdown.management += 10;
-
-    // Maintenance (max 10 points)
-    const changelog = scanResults.communityFiles.found.find(f => 
-      f.name.includes('CHANGELOG')
-    );
-    const github = scanResults.communityFiles.found.find(f => 
-      f.name.includes('.github')
-    );
-    if (changelog) breakdown.maintenance += 5;
-    if (github) breakdown.maintenance += 5;
-
-    score = Object.values(breakdown).reduce((a, b) => a + b, 0);
-
-    // Apply AI analysis score if available
-    if (aiAnalysis && aiAnalysis.score) {
-      score = Math.round((score + aiAnalysis.score) / 2);
-    }
+    // This method is now deprecated in favor of ScoringService
+    // Kept for backward compatibility
+    const comprehensiveReport = this.scoringService.generateReport(scanResults, aiAnalysis);
+    
+    const breakdown = {};
+    Object.entries(comprehensiveReport.categories).forEach(([category, scores]) => {
+      breakdown[category] = scores.earned;
+    });
 
     return {
-      score,
-      maxScore: 100,
+      score: comprehensiveReport.summary.overallScore,
+      maxScore: comprehensiveReport.summary.maxPoints,
       breakdown
     };
   }
 
   generateRecommendations(scanResults, aiAnalysis) {
-    const recommendations = [];
-
-    // Check for missing critical files
-    const criticalMissing = scanResults.communityFiles.missing.filter(
-      f => f.priority === 'critical'
-    );
-    criticalMissing.forEach(f => {
-      recommendations.push({
-        priority: 'high',
-        category: 'documentation',
-        title: `Add ${f.name}`,
-        description: `This file is essential for open source projects`
-      });
-    });
-
-    // Check README quality
-    const readme = scanResults.communityFiles.found.find(f => 
-      f.name.includes('README')
-    );
-    if (!readme || readme.quality === 'basic' || readme.quality === 'minimal') {
-      recommendations.push({
-        priority: 'high',
-        category: 'documentation',
-        title: 'Improve README.md',
-        description: 'Add installation instructions, usage examples, and contribution guidelines'
-      });
-    }
+    // This method is now deprecated in favor of ScoringService
+    // Kept for backward compatibility
+    const comprehensiveReport = this.scoringService.generateReport(scanResults, aiAnalysis);
+    
+    // Convert to old format
+    const recommendations = comprehensiveReport.recommendations.map(rec => ({
+      priority: rec.priority === 'critical' ? 'high' : rec.priority,
+      category: rec.category || 'general',
+      title: rec.file ? `Improve ${rec.file}` : 'General Improvement',
+      description: rec.message,
+      action: rec.action
+    }));
 
     // Add AI recommendations if available
     if (aiAnalysis && aiAnalysis.recommendations) {
@@ -145,19 +94,6 @@ export class ReportGenerator {
       });
     }
 
-    // Check for high priority missing files
-    const highPriorityMissing = scanResults.communityFiles.missing.filter(
-      f => f.priority === 'high'
-    );
-    highPriorityMissing.forEach(f => {
-      recommendations.push({
-        priority: 'medium',
-        category: 'community',
-        title: `Add ${f.name}`,
-        description: `Helps build a welcoming community`
-      });
-    });
-
     return recommendations.slice(0, 10); // Top 10 recommendations
   }
 
@@ -172,13 +108,13 @@ export class ReportGenerator {
   }
 
   formatConsoleOutput(report) {
-    const { repository, ossReadiness, findings, aiAnalysis } = report.analysis;
+    const { repository, ossReadiness, findings, aiAnalysis, comprehensiveScoring } = report.analysis;
     
     let output = '';
     
     // Header
     output += chalk.cyan.bold('━'.repeat(60)) + '\n';
-    output += chalk.cyan.bold('📊 REPOSITORY ANALYSIS REPORT') + '\n';
+    output += chalk.cyan.bold('📊 COMPREHENSIVE OSS READINESS REPORT') + '\n';
     output += chalk.cyan.bold('━'.repeat(60)) + '\n\n';
 
     // Project Info
@@ -192,11 +128,20 @@ export class ReportGenerator {
     output += chalk.gray(`   Files: `) + chalk.white(repository.fileCount) + '\n';
     output += chalk.gray(`   Code Lines: `) + chalk.white(repository.codeLines) + '\n\n';
 
-    // OSS Readiness Score
-    const scoreColor = ossReadiness.score >= 80 ? chalk.green : 
-                       ossReadiness.score >= 60 ? chalk.yellow : chalk.red;
+    // OSS Readiness Score with Level
+    const score = Math.round(ossReadiness.score);
+    const level = ossReadiness.readinessLevel || this.getReadinessLabel(score);
+    const scoreColor = score >= 80 ? chalk.green : 
+                       score >= 60 ? chalk.yellow : chalk.red;
     output += chalk.white.bold('⭐ OSS Readiness Score: ') + 
-              scoreColor.bold(`${ossReadiness.score}/100`) + '\n\n';
+              scoreColor.bold(`${score}/100`) + 
+              chalk.gray(` (${level})`) + '\n';
+    
+    if (comprehensiveScoring && comprehensiveScoring.summary.bonusPoints > 0) {
+      output += chalk.gray(`   Bonus Points: `) + 
+                chalk.green(`+${comprehensiveScoring.summary.bonusPoints}`) + '\n';
+    }
+    output += '\n';
 
     // Score Breakdown
     output += chalk.white('   Breakdown:\n');
@@ -252,7 +197,34 @@ export class ReportGenerator {
 
     output += chalk.cyan.bold('━'.repeat(60)) + '\n';
     
+    // Add detailed file scoring if available
+    if (comprehensiveScoring && comprehensiveScoring.files && this.verbose) {
+      output += chalk.blue.bold(`\n📋 Detailed File Scores:\n`);
+      comprehensiveScoring.files.forEach(file => {
+        const fileScore = Math.round(file.score);
+        const maxScore = Math.round(file.maxScore);
+        const percentage = maxScore > 0 ? Math.round((fileScore / maxScore) * 100) : 0;
+        const scoreColor = percentage >= 80 ? chalk.green : 
+                          percentage >= 50 ? chalk.yellow : chalk.red;
+        
+        output += chalk.gray(`   ${file.file}: `) + 
+                  scoreColor(`${fileScore}/${maxScore}`) +
+                  chalk.gray(` (${percentage}%)`) + '\n';
+      });
+      output += '\n';
+    }
+    
+    output += chalk.cyan.bold('━'.repeat(60)) + '\n';
+    
     return output;
+  }
+
+  getReadinessLabel(score) {
+    if (score >= 90) return 'Excellent';
+    if (score >= 75) return 'Good';
+    if (score >= 60) return 'Fair';
+    if (score >= 40) return 'Poor';
+    return 'Critical';
   }
 
   createProgressBar(percent, length = 20) {
