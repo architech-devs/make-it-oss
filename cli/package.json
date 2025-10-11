@@ -9,7 +9,10 @@
   },
   "scripts": {
     "start": "node src/index.js",
-    "dev": "node --watch src/index.js"
+    "dev": "node --watch src/index.js",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
+    "summarize": "node src/index.js summarize"
   },
   "keywords": [
     "oss",
@@ -20,12 +23,20 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "yargs": "^17.7.2",
+    "@google/generative-ai": "^0.21.0",
     "chalk": "^5.3.0",
-    "ora": "^6.3.1",
     "fs-extra": "^11.2.0",
     "glob": "^10.3.10",
-    "@google/generative-ai": "^0.21.0",
-    "ignore": "^5.3.0"
+    "ignore": "^5.3.0",
+    "ora": "^6.3.1",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": ["**/__tests__/**/*.test.js"],
+    "transform": {}
   }
 }

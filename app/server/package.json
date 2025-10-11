@@ -11,8 +11,8 @@
     "lint:fix": "eslint . --ext .js --fix",
     "format": "prettier --write .",
     "check-format": "prettier --check .",
-    "test": "jest --runInBand",
-    "test:watch": "jest --watchAll"
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand",
+    "test:watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watchAll"
   },
   "keywords": [
     "open-source",
@@ -47,5 +47,10 @@
       "eslint --fix",
       "prettier --write"
     ]
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": ["**/__tests__/**/*.test.js"],
+    "transform": {}
   }
 }

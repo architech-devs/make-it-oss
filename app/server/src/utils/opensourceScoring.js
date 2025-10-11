@@ -228,6 +228,11 @@ export const SCORING_CONFIG = {
  * @returns {Object} Detailed scoring breakdown
  */
 export const calculateOSSScore = (analysis) => {
+  // Handle null or undefined analysis
+  if (!analysis) {
+    analysis = { files: {} };
+  }
+
   const results = {
     totalScore: 0,
     maxScore: 100,
