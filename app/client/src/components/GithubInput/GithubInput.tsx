@@ -1,14 +1,37 @@
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Loader2 } from "lucide-react"
 import FileChecklist from "@/components/FileChecklist/FileChecklist"
 import { fetchRepoFiles, type FileStatus } from "@/utils/api"
 
-const GithubInput = () => {
+interface GithubInputProps {
+    onFilesReady?: (files: FileStatus[]) => void
+    filesOnly?: boolean
+    files?: FileStatus[]
+}
+
+const GithubInput = ({ onFilesReady, filesOnly, files: propFiles }: GithubInputProps) => {
     const [repo, setRepo] = useState("")
     const [loading, setLoading] = useState(false)
     const [files, setFiles] = useState<FileStatus[] | null>(null)
     const [error, setError] = useState("")
+
+    // Effect to notify parent when files are ready (only once when files first load)
+    const hasNotifiedRef = useRef(false)
+    
+    useEffect(() => {
+        if (files && files.length > 0 && onFilesReady && !hasNotifiedRef.current) {
+            onFilesReady(files)
+            hasNotifiedRef.current = true
+        }
+    }, [files, onFilesReady])
+    
+    // Reset notification flag when files are cleared
+    useEffect(() => {
+        if (!files) {
+            hasNotifiedRef.current = false
+        }
+    }, [files])
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value.trim()
@@ -51,17 +74,22 @@ const GithubInput = () => {
         }
     }
 
+    // If filesOnly mode, only render the files section using propFiles
+    if (filesOnly && propFiles) {
+        return <FileChecklist files={propFiles} />
+    }
+
     return (
         <div className="flex flex-col space-y-4 md:px-0 px-4">
             <div className="border p-4 rounded-2xl flex items-center md:text-2xl text-md justify-between">
-                <div>
+                <div className="flex w-full">
                     github.com/
                     <input
                         type="text"
                         value={repo}
                         onChange={handleChange}
                         onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-                        className="outline-none md:w-[60%] w-[50%]"
+                        className="outline-none w-full"
                         placeholder="username/repo"
                         disabled={loading}
                     />

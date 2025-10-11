@@ -1,0 +1,31 @@
+{
+  "name": "make-it-oss",
+  "version": "1.0.0",
+  "description": "CLI tool to analyze and prepare repositories for open source",
+  "main": "src/index.js",
+  "type": "module",
+  "bin": {
+    "make-it-oss": "./src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "keywords": [
+    "oss",
+    "open-source",
+    "cli",
+    "repository-analysis"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "yargs": "^17.7.2",
+    "chalk": "^5.3.0",
+    "ora": "^6.3.1",
+    "fs-extra": "^11.2.0",
+    "glob": "^10.3.10",
+    "@google/generative-ai": "^0.21.0",
+    "ignore": "^5.3.0"
+  }
+}
