@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Play, Pause, RotateCcw, ExternalLink, Zap } from 'lucide-react'
-import CodeBlock from './CodeBlock'
 
 interface InteractiveDemoProps {
   title: string
