@@ -1,0 +1,433 @@
+/* Make-It-OSS Documentation Styles */
+/* Mobile-first responsive design with enhanced typography */
+
+/* Global documentation styles */
+.docs-content {
+  /* Enhanced typography for better readability */
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "pnum" 1, "tnum" 0, "onum" 1, "lnum" 0, "dlig" 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Typography hierarchy with responsive scaling */
+.docs-content h1 {
+  font-size: 1.875rem; /* 30px */
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  line-height: 1.25;
+  scroll-margin-top: 6rem;
+  color: inherit;
+}
+
+.docs-content h2 {
+  font-size: 1.5rem; /* 24px */
+  font-weight: 600;
+  margin-top: 3rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.25;
+  scroll-margin-top: 6rem;
+  color: inherit;
+}
+
+.docs-content h3 {
+  font-size: 1.25rem; /* 20px */
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  line-height: 1.25;
+  scroll-margin-top: 6rem;
+  color: inherit;
+}
+
+.docs-content h4 {
+  font-size: 1.125rem; /* 18px */
+  font-weight: 500;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  line-height: 1.25;
+  scroll-margin-top: 6rem;
+  color: inherit;
+}
+
+/* Enhanced paragraph spacing */
+.docs-content p {
+  margin-bottom: 1.5rem;
+  line-height: 1.625;
+  max-width: 75ch;
+}
+
+/* Improved list styling */
+.docs-content ul,
+.docs-content ol {
+  margin-bottom: 1.5rem;
+  padding-left: 1.5rem;
+}
+
+.docs-content li {
+  line-height: 1.625;
+  max-width: 70ch;
+  margin-bottom: 0.5rem;
+}
+
+/* Responsive typography */
+@media (min-width: 640px) {
+  .docs-content h1 {
+    font-size: 2.25rem; /* 36px */
+  }
+  
+  .docs-content h2 {
+    font-size: 1.875rem; /* 30px */
+  }
+  
+  .docs-content h3 {
+    font-size: 1.5rem; /* 24px */
+  }
+  
+  .docs-content h4 {
+    font-size: 1.25rem; /* 20px */
+  }
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 640px) {
+  .docs-content {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .docs-content h1 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .docs-content h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  
+  .docs-content h3 {
+    font-size: 1.125rem;
+    margin-bottom: 0.75rem;
+  }
+}
+
+/* Enhanced paragraph spacing */
+.docs-content p {
+  @apply mb-6 leading-relaxed;
+  max-width: 75ch;
+}
+
+/* Improved list styling */
+.docs-content ul,
+.docs-content ol {
+  @apply mb-6 pl-6 space-y-2;
+}
+
+.docs-content li {
+  @apply leading-relaxed;
+  max-width: 70ch;
+}
+
+/* Code block improvements */
+.docs-content pre {
+  @apply rounded-lg border border-border bg-muted/50 p-4 overflow-x-auto text-sm leading-relaxed mb-6;
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+}
+
+.docs-content code {
+  @apply text-sm bg-muted px-2 py-1 rounded;
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+}
+
+.docs-content pre code {
+  @apply bg-transparent p-0;
+}
+
+/* Table responsive improvements */
+.docs-content table {
+  @apply w-full mb-8 text-sm border-collapse;
+  border-spacing: 0;
+}
+
+.docs-content th {
+  @apply bg-muted/60 px-4 py-3 text-left font-semibold border border-border;
+}
+
+.docs-content td {
+  @apply px-4 py-3 border border-border;
+}
+
+.docs-content thead tr:first-child th:first-child {
+  @apply rounded-tl-lg;
+}
+
+.docs-content thead tr:first-child th:last-child {
+  @apply rounded-tr-lg;
+}
+
+.docs-content tbody tr:last-child td:first-child {
+  @apply rounded-bl-lg;
+}
+
+.docs-content tbody tr:last-child td:last-child {
+  @apply rounded-br-lg;
+}
+
+/* Enhanced blockquote styling */
+.docs-content blockquote {
+  @apply border-l-4 border-primary/30 pl-6 py-2 my-6 italic text-muted-foreground bg-muted/20 rounded-r-lg;
+}
+
+/* Image responsive improvements */
+.docs-content img {
+  @apply max-w-full h-auto rounded-lg shadow-sm;
+}
+
+/* Link styling improvements */
+.docs-content a:not(.btn):not(.button) {
+  @apply text-primary underline decoration-primary/30 underline-offset-2 hover:decoration-primary transition-colors;
+}
+
+.docs-content a:hover {
+  @apply decoration-2;
+}
+
+/* Interactive elements */
+.docs-content .feature-card {
+  @apply p-6 rounded-lg border border-border bg-background hover:shadow-md transition-all duration-200 hover:border-primary/30;
+}
+
+.docs-content .feature-card:hover {
+  transform: translateY(-1px);
+}
+
+/* Callout boxes */
+.docs-content .callout {
+  @apply p-4 rounded-lg border mb-6;
+}
+
+.docs-content .callout.info {
+  @apply bg-blue-50 border-blue-200 text-blue-900;
+}
+
+.docs-content .callout.warning {
+  @apply bg-yellow-50 border-yellow-200 text-yellow-900;
+}
+
+.docs-content .callout.success {
+  @apply bg-green-50 border-green-200 text-green-900;
+}
+
+.docs-content .callout.error {
+  @apply bg-red-50 border-red-200 text-red-900;
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .docs-content .callout.info {
+    @apply bg-blue-950/30 border-blue-800 text-blue-100;
+  }
+  
+  .docs-content .callout.warning {
+    @apply bg-yellow-950/30 border-yellow-800 text-yellow-100;
+  }
+  
+  .docs-content .callout.success {
+    @apply bg-green-950/30 border-green-800 text-green-100;
+  }
+  
+  .docs-content .callout.error {
+    @apply bg-red-950/30 border-red-800 text-red-100;
+  }
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 640px) {
+  .docs-content {
+    @apply px-4;
+  }
+  
+  .docs-content h1 {
+    @apply text-2xl mb-4;
+  }
+  
+  .docs-content h2 {
+    @apply text-xl mb-4;
+  }
+  
+  .docs-content h3 {
+    @apply text-lg mb-3;
+  }
+  
+  .docs-content pre {
+    @apply p-3 text-xs;
+  }
+  
+  .docs-content table {
+    @apply text-xs;
+  }
+  
+  .docs-content th,
+  .docs-content td {
+    @apply px-2 py-2;
+  }
+}
+
+/* Tablet responsive adjustments */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .docs-content {
+    @apply px-6;
+  }
+  
+  .docs-content pre {
+    @apply text-sm;
+  }
+}
+
+/* Desktop optimizations */
+@media (min-width: 1025px) {
+  .docs-content {
+    @apply px-8;
+  }
+  
+  .docs-content p,
+  .docs-content li {
+    max-width: 75ch;
+  }
+}
+
+/* Print styles */
+@media print {
+  .docs-content {
+    @apply text-black bg-white;
+  }
+  
+  .docs-content h1,
+  .docs-content h2,
+  .docs-content h3,
+  .docs-content h4 {
+    @apply text-black;
+    page-break-after: avoid;
+  }
+  
+  .docs-content p,
+  .docs-content li {
+    orphans: 3;
+    widows: 3;
+  }
+  
+  .docs-content pre,
+  .docs-content table {
+    page-break-inside: avoid;
+  }
+  
+  .docs-content a {
+    @apply text-black no-underline;
+  }
+  
+  .docs-content a:after {
+    content: " (" attr(href) ")";
+    @apply text-xs text-gray-600;
+  }
+}
+
+/* Accessibility improvements */
+.docs-content :focus {
+  @apply outline-2 outline-offset-2 outline-primary;
+}
+
+/* Smooth scrolling for hash links */
+html {
+  scroll-behavior: smooth;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .docs-content {
+    @apply contrast-125;
+  }
+  
+  .docs-content .feature-card {
+    @apply border-2;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .docs-content * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Search highlighting */
+.docs-content .search-highlight {
+  @apply bg-yellow-200 text-yellow-900 px-1 rounded;
+}
+
+/* Copy button for code blocks */
+.docs-content .code-block-container {
+  @apply relative group;
+}
+
+.docs-content .copy-button {
+  @apply absolute top-2 right-2 p-2 rounded bg-background/80 opacity-0 group-hover:opacity-100 transition-opacity;
+}
+
+/* Table of contents styling */
+.docs-content .toc {
+  @apply sticky top-8 max-h-screen overflow-y-auto;
+}
+
+.docs-content .toc ul {
+  @apply list-none pl-0 space-y-1;
+}
+
+.docs-content .toc a {
+  @apply block px-3 py-1 rounded text-sm no-underline hover:bg-muted;
+}
+
+.docs-content .toc a.active {
+  @apply bg-primary/10 text-primary font-medium;
+}
+
+/* Loading states */
+.docs-content .loading {
+  @apply animate-pulse;
+}
+
+.docs-content .loading-text {
+  @apply h-4 bg-muted rounded;
+}
+
+.docs-content .loading-title {
+  @apply h-6 bg-muted rounded w-3/4;
+}
+
+/* Selection styling */
+.docs-content ::selection {
+  @apply bg-primary/20;
+}
+
+/* Scrollbar styling */
+.docs-content ::-webkit-scrollbar {
+  @apply w-2 h-2;
+}
+
+.docs-content ::-webkit-scrollbar-track {
+  @apply bg-muted/30;
+}
+
+.docs-content ::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/30 rounded-full;
+}
+
+.docs-content ::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/50;
+}
