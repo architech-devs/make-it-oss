@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { Menu, X, ExternalLink, Github, Twitter, MessageCircle, ChevronUp, Youtube, Mail } from 'lucide-react'
 import Navbar from '@/components/Layout/Navbar'
 import type { TDocSection } from './Content/content'
@@ -13,7 +13,6 @@ const DocsLayout = ({ sections, children }: DocsLayoutProps) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [scrollProgress, setScrollProgress] = useState(0)
   const [showScrollTop, setShowScrollTop] = useState(false)
-  const containerRef = useRef<HTMLDivElement | null>(null)
 
   // Handle intersection observer for active section
   useEffect(() => {
