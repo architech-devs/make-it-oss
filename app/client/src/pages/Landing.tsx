@@ -6,6 +6,7 @@ import Navbar from '@/components/Layout/Navbar'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import type { FileStatus } from '@/utils/api'
+import LoginButton from '@/components/auth/LoginButton'
 
 const Landing = () => {
     const [showFiles, setShowFiles] = useState(false)
@@ -32,6 +33,10 @@ const Landing = () => {
         <div className="flex flex-col min-h-screen max-w-2xl mx-auto pt-2">
             <div className="sticky top-0 z-50 backdrop-blur py-2 bg-background/80">
                 <Navbar />
+            </div>
+            <div className=' flex justify-end'>
+                <LoginButton/>
+                
             </div>
             
             {/* Main content area with slide-up transition */}
