@@ -1,11 +1,15 @@
 import express from "express";
-import cors from "cors";
 
 import apiRoutes from "./routes/index.js";
 import healthRoutes from "./routes/health.js";
 import authRoutes from "./routes/auth.js";
 import githubRoutes from "./routes/githubRoutes.js";
 
+import applySecurity from "./middlewares/security.js";
+import logger from "./config/logger.js";
+import { sanitizeMiddleware } from "./middlewares/validation.js";
+import { buildEndpointRateLimiters, globalIpRateLimiter } from "./middlewares/rateLimiter.js";
+import { rateLimits } from "./utils/securityConfig.js";
 
 
 const app = express();
@@ -15,6 +19,19 @@ app.use(cors({
   credentials: true               // allow cookies
 }));
 app.use(express.json());
+// 1. Global security handeling 
+applySecurity(app, logger);
+  
+// 2. Sanitize all incoming JSON bodies
+app.use(sanitizeMiddleware());
+
+// 3. Global IP rate limiting
+app.use(globalIpRateLimiter(logger));
+
+// 3. Endpoint-specific rate limiting
+for (const {path, middleware} of buildEndpointRateLimiters(rateLimits, logger)) {
+  app.use(path, middleware);
+}
 
 // Routes
 app.use("/api/auth", authRoutes);

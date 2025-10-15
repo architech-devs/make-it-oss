@@ -29,6 +29,7 @@
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
+    "helmet": "^8.1.0",
     "mongoose": "^8.19.1",
     "octokit": "^4.0.0",
     "winston": "^3.17.0"
