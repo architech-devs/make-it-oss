@@ -36,7 +36,7 @@ const Landing = () => {
             
             {/* Main content area with slide-up transition */}
             <div 
-                className={`transition-all duration-300 ease-out ${
+                className={`transition-all duration-300 ease-out pt-18 ${
                     showFiles ? 'space-y-4' : 'space-y-20'
                 }`}
             >

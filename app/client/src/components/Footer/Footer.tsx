@@ -1,6 +1,8 @@
 import Discord_logo from "@/assets/images/discord.png"
 import Github_logo from "@/assets/images/github.png"
-import { Youtube, Mail, Twitter } from "lucide-react"
+import X_logo from "@/assets/images/x.png"
+import Youtube_logo from "@/assets/images/youtube.png"
+import Gmail_logo from "@/assets/images/gmail.png"
 import { Link } from "react-router-dom"
 
 const Footer = () => {
@@ -13,11 +15,11 @@ const Footer = () => {
         |
         <Link to="https://github.com/architech-devs/make-it-oss" className="hover:opacity-70 transition-opacity"><img src={Github_logo} alt="GitHub" className="w-4 h-4 dark:invert" /></Link>
         |
-        <Link to="https://twitter.com/architech_dev" className="hover:opacity-70 transition-opacity"><Twitter className="w-4 h-4" /></Link>
+        <Link to="https://twitter.com/architech_dev" className="hover:opacity-70 transition-opacity"><img src={X_logo} alt="Twitter" className="w-4 h-4 invert dark:invert-0" /></Link>
         |
-        <Link to="https://youtube.com/channel/UC8LedUlToF1oO3E3NZG46aw" className="hover:opacity-70 transition-opacity"><Youtube className="w-4 h-4" /></Link>
+        <Link to="https://youtube.com/channel/UC8LedUlToF1oO3E3NZG46aw" className="hover:opacity-70 transition-opacity"><img src={Youtube_logo} alt="Youtube" className="w-4" /></Link>
         |
-        <Link to="mailto:architech.devs@gmail.com" className="hover:opacity-70 transition-opacity"><Mail className="w-4 h-4" /></Link>
+        <Link to="mailto:architech.devs@gmail.com" className="hover:opacity-70 transition-opacity"><img src={Gmail_logo} alt="Youtube" className="w-4" /></Link>
       </div>
       <Link
         to="https://github.com/architech-devs"
