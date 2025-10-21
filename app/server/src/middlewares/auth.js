@@ -7,7 +7,6 @@ dotenv.config();
 export const authenticate = async (req, res, next) => {
   let token = req.headers.authorization?.split(" ")[1];
   const cookieHeader = req.headers.cookie;
-  console.log("workkk")
 
 if (cookieHeader) {
   const cookies = cookieHeader.split('; ');

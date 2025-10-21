@@ -10,12 +10,14 @@ import logger from "./config/logger.js";
 import { sanitizeMiddleware } from "./middlewares/validation.js";
 import { buildEndpointRateLimiters, globalIpRateLimiter } from "./middlewares/rateLimiter.js";
 import { rateLimits } from "./utils/securityConfig.js";
+import cors from "cors"
 
 
 const app = express();
 
 app.use(cors({
   origin: 'http://localhost:5173', // frontend URL
+  origin: 'http://localhost:3000', // Backend URL
   credentials: true               // allow cookies
 }));
 app.use(express.json());
@@ -38,7 +40,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api/github", githubRoutes);
 app.use("/health", healthRoutes);
 app.use("/api", apiRoutes);
-
 app.get("/", (req, res) => {
   res.json({ message: "Hello from Express with CORS!" });
 });

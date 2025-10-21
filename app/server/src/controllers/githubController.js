@@ -2,11 +2,9 @@ import axios from "axios";
 import { decryptToken } from "../models/user.js";
 
 export const getUserRepos = async (req, res) => {
-  console.log(req.user.username)
-  console.log(req.user.accessToken)
+
   try {
     const token = decryptToken(req.user.accessToken);
-    console.log(token)
     const response = await axios.get("https://api.github.com/user/repos", {
       headers: { Authorization: `Bearer ${token}` },
     });
