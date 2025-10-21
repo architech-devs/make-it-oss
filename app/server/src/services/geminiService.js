@@ -13,7 +13,7 @@ export async function GeminiResponse(prompt) {
         const truncatedPrompt = prompt.substring(0, maxSize * 0.8) + '\n\n[Content truncated due to size limits]';
         prompt = truncatedPrompt;
     }
-    
+
     try {
         const result = await ai.models.generateContent({
             model: "gemini-2.5-flash",
