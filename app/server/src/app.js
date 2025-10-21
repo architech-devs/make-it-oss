@@ -13,13 +13,10 @@ import { rateLimits } from "./utils/securityConfig.js";
 import cors from "cors"
 
 
+
+
 const app = express();
 
-app.use(cors({
-  origin: 'http://localhost:5173', // frontend URL
-  origin: 'http://localhost:3000', // Backend URL
-  credentials: true               // allow cookies
-}));
 app.use(express.json());
 // 1. Global security handeling 
 applySecurity(app, logger);
