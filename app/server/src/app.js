@@ -7,7 +7,7 @@ import logger from "./config/logger.js";
 import { sanitizeMiddleware } from "./middlewares/validation.js";
 import { buildEndpointRateLimiters, globalIpRateLimiter } from "./middlewares/rateLimiter.js";
 import { rateLimits } from "./utils/securityConfig.js";
-
+import showCaseRoutes from "./routes/showcase.js";
 
 const app = express();
 
@@ -28,6 +28,8 @@ for (const {path, middleware} of buildEndpointRateLimiters(rateLimits, logger)) 
 // Routes
 app.use("/health", healthRoutes);
 app.use("/api", apiRoutes);
+app.use("/api/showcase", showCaseRoutes);
+
 
 app.get("/", (req, res) => {
   res.json({ message: "Hello from Express with CORS!" });
