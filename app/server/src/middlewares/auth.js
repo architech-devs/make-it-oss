@@ -29,3 +29,26 @@ if (cookieHeader) {
     res.status(403).json({ message: "Forbidden" });
   }
 };
+
+const processedCodes = new Set();
+
+export const preventDuplicateOAuth = (req, res, next) => {
+  const { code } = req.query;
+  
+  if (!code) {
+    return next();
+  }
+  
+  if (processedCodes.has(code)) {
+    console.log('Duplicate OAuth request detected, ignoring');
+    return res.status(400).json({ error: 'Request already processed' });
+  }
+  
+  processedCodes.add(code);
+  
+  setTimeout(() => {
+    processedCodes.delete(code);
+  }, 10 * 60 * 1000);
+  
+  next();
+};
