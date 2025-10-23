@@ -1,5 +1,6 @@
 import { approveSubmission, getCurrentShowcase, getSubmittedRepo, rejectSubmission, submitRepo } from "../services/showCaseService.js";
 import { getFeaturedShowcases } from "../services/showCaseService.js";
+import { errorResponse, successResponse } from "../utils/response.js";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -29,30 +30,30 @@ export const Submission = async (req, res) => {
 
     try {
             if (!repoUrl || !repoUrl.includes('github.com')) {
-                return res.status(400).json({ error: 'Invalid GitHub repository URL' });
+                return errorResponse(res, "Invalid GitHub URL", 400);
             }
 
             if(!email || !emailRegex.test(email)){
-                return res.status(400).json({ error : "Enter a valid email address"});
+                return errorResponse(res, "Enter a valid email address", 400);
             }
 
             const submission =  await submitRepo(repoUrl, description, email);
-            return res.json({ submission });
+            return successResponse(res, submission, "Repository submitted successfully!");
 
     } catch (error) {
         console.log("Submission error", error);
 
 
         if (error.code == "11000") {
-            return res.status(409).json({ error : "Submission already included."});
+            return errorResponse(res, "Submission already included.", 409);
         }
         if (error.message === "Repository not found.") {
-           return res.status(404).json({ error: error.message });
+           return errorResponse(res, error.message, 404)
         }
         if (error.message === "Invalid GitHub URL"){
-           return res.status(400).json({ error : error.message });
+           return errorResponse(res, error.message, 400);
         }
-        return res.status(500).json({ error : "Internal Server Error"});
+        return errorResponse(res, "Internal server error", 500);
         
     }
 }
@@ -87,11 +88,11 @@ export const getSubmissions = async (req, res) => {
 
         //handling pagination in showaseService.js
         const submission =  await getSubmittedRepo(page, limit, statusFilter);
-        return res.status(200).json( submission );
+        return successResponse(res, submission, "Data received successfully");
         
     }catch(err){
-        console.log("Error", err);
-        return res.status(500).json({ error : "Internal Server Error"});
+        console.log("getSubmissions Error", err);
+        return errorResponse(res, "Internal server error", 500);
     }
     
 }
@@ -119,15 +120,16 @@ export const submitApprovedSubmission = async (req, res) => {
   
   try {
     if (!id) {
-      return res.status(400).json({ error: "Valid id is required." });
+      return errorResponse(res, "Valid id is required." , 400);
     }
 
     if (!weekNumber || isNaN(weekNumber)) {
-      return res.status(400).json({ error: "Valid week number is required." });
+      
+      return errorResponse(res, "Valid week number is required.", 400);
     }
 
     if (!adminNotes || adminNotes.length < 4) {
-      return res.status(400).json({ error: "Valid admin notes are required." });
+      return errorResponse(res, "Valid admin notes are required." , 400);
     }
 
     id = id.split("=")[1]
@@ -136,13 +138,13 @@ export const submitApprovedSubmission = async (req, res) => {
     const result = await approveSubmission(id, weekNumber, adminNotes);
 
     if (!result) {
-      return res.status(404).json({ error: "Submission not found." });
+      return errorResponse(res, "Submission not found.", 404);
     }
 
-    return res.json(result);
+    return successResponse(res, result, "Repository accepted successfully");
   } catch (error) {
     console.error("Approve submission error:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
+    return errorResponse(res, "Internal Server Error", 500);
   }
 };
 
@@ -170,15 +172,15 @@ export const submitRejectedSubmission = async (req, res) => {
   
   try {
     if (!id) {
-      return res.status(400).json({ error: "Valid id is required." });
+      return errorResponse(res, "Valid id is required." , 400);
     }
 
     if (!weekNumber || isNaN(weekNumber)) {
-      return res.status(400).json({ error: "Valid week number is required." });
+      return errorResponse(res, "Valid week number is required.", 400);
     }
 
     if (!adminNotes || adminNotes.length < 4) {
-      return res.status(400).json({ error: "Valid admin notes are required." });
+      return errorResponse(res, "Valid admin notes are required." , 400);
     }
 
     id = id.split("=")[1]
@@ -187,13 +189,13 @@ export const submitRejectedSubmission = async (req, res) => {
     const result = await rejectSubmission(id, weekNumber, adminNotes);
 
     if (!result) {
-      return res.status(404).json({ error: "Submission not found." });
+      return errorResponse(res, "Submission not found.", 404);
     }
 
-    return res.json(result);
+    return successResponse(res, result, "Repository rejected successfully");
   } catch (error) {
     console.error("Reject submission error:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
+    return errorResponse(res, "Internal Server Error", 500);
   }
 };
 
@@ -216,15 +218,15 @@ export const getCurrentWeekShowcase = async (req, res) => {
       const currentShowcase = await getCurrentShowcase();
       
       if (currentShowcase.length == 0) {
-         return res.status(404).json({ error: "No showcased repository for this week." });
+         return errorResponse(res, "No showcased repository for this week.", 404);
       }
 
-      return res.status(200).json(currentShowcase);
+      return successResponse(res, currentShowcase, "Successfully recieved the repository")
     } catch (error) {
 
       console.error("Get current showcase error:", error);
 
-      return res.status(500).json({ error: "Internal Server Error" });
+      return errorResponse(res, "Internal Server Error", 500);
   }
 }
 
@@ -249,12 +251,12 @@ export const getFeaturedSubmission = async (req, res) => {
 
       const featured = await getFeaturedShowcases( page, limit );
       if(featured.data == 0){
-        return res.status(404).json({ error : "No featured repositories found."});
+        return errorResponse(res, "No featured repositories found.", 404);
       }
-      return res.status(200).json({ featured });
+      return successResponse(res, featured, "Fetched featured repositories");
       
     } catch (error) {
         console.log("Featured error: ", error);
-        return res.status(500).json({ error : "Internal Server Error"});
+        return errorResponse(res, "Internal Server Error", 500);
     }
 }
