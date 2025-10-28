@@ -16,8 +16,11 @@ const Navbar = () => {
               make-it-oss
             </NavigationMenuItem>
           </Link>
+          
         </NavigationMenuList>
       </NavigationMenu>
+     
+
       <AnimatedThemeToggler />
     </div>
   )

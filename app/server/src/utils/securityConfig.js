@@ -23,7 +23,7 @@ export const globalIpLimit = {
 };
 
 export const corsConfig = {
-  allowedOrigins: (process.env.CORS_ALLOWED_ORIGINS || "")
+  allowedOrigins: (process.env.CORS_ALLOWED_ORIGINS || 'http://localhost:5173, http://localhost:3000')
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean),

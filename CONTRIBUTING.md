@@ -83,6 +83,9 @@ If you're unsure where to begin contributing, you can start by looking through:
    NODE_ENV=development
    GITHUB_TOKEN=your_github_token_here
    GEMINI_API_KEY=your_gemini_api_key_here
+   MONGO_URI=mongodb://localhost:27017/makeitoss
+   MONGO_DB_NAME=makeitoss
+   MONGO_CONNECT_RETRY=5
    ```
 
 ### Project Structure

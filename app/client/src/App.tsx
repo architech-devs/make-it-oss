@@ -14,6 +14,7 @@ const App = () => {
         <AdminProvider>
           <Routes>
           <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/docs" element={<Docs />} />
           <Route path="/admin/login" element={<LoginPage />} />
           <Route
