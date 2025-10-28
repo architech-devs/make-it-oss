@@ -1,26 +1,11 @@
 import React, { useState } from "react";
 import SubmissionModal from "./SubmissionModal";
 import RejectionModal from "./RejectionModal";
-import {
-  Card,
-  CardContent,
-  CardActions,
-  Typography,
-  Button,
-  Box,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Paper,
-  Divider,
-} from "@mui/material";
-import Grid from "@mui/material/Grid";
-import CheckIcon from "@mui/icons-material/Check";
-import CloseIcon from "@mui/icons-material/Close";
-import InfoIcon from "@mui/icons-material/Info";
+import { Card, CardContent, CardFooter } from "../ui/card";
+import { Button } from "@/components/ui/button";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "../ui/select";
+import { Info, Check, X } from "lucide-react";
 
-// Type for each submission row
 interface Submission {
   id: number;
   repoName: string;
@@ -31,7 +16,6 @@ interface Submission {
   showcaseWeek: string | null;
 }
 
-// Initial data
 const initialSubmissions: Submission[] = [
   {
     id: 1,
@@ -82,7 +66,6 @@ const SubmissionTable: React.FC = () => {
     );
   }
 
-  // Pending/Approved/Rejected submissions as one list
   const pending = submissions.filter(
     sub =>
       sub.status === "pending" ||
@@ -91,115 +74,90 @@ const SubmissionTable: React.FC = () => {
   );
 
   return (
-    <Box>
-      <Typography variant="h5" sx={{ mb: 2 }}>
-        Pending Submissions
-      </Typography>
-      <Grid container spacing={3}>
+    <div>
+      <div className="text-2xl font-semibold mb-4">Pending Submissions</div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {pending.map(sub => (
-          <Grid item xs={12} md={6} key={sub.id}>
-            <Card elevation={3}>
-              <CardContent>
-                <Typography variant="h6">{sub.repoName}</Typography>
-                <Typography color="text.secondary">
-                  Submitted By: {sub.submittedBy}
-                </Typography>
-                <Typography color="text.secondary">
-                  Submitted At: {sub.submittedAt}
-                </Typography>
-                <Typography color="primary" sx={{ mt: 1 }}>
-                  {sub.status === "rejected" && sub.rejectionReason
-                    ? `Rejected (${sub.rejectionReason})`
-                    : sub.status.charAt(0).toUpperCase() + sub.status.slice(1)}
-                </Typography>
-                {sub.status === "approved" && (
-                  <Box sx={{ mt: 2 }}>
-                    <FormControl fullWidth size="small">
-                      <InputLabel id={`week-select-label-${sub.id}`}>Showcase Week</InputLabel>
-                      <Select
-                        labelId={`week-select-label-${sub.id}`}
-                        value={sub.showcaseWeek || ""}
-                        label="Showcase Week"
-                        onChange={e => handleSchedule(sub.id, e.target.value)}
-                      >
-                        <MenuItem value="">Select Week</MenuItem>
-                        {weeks.map(week => (
-                          <MenuItem key={week} value={week}>
-                            {week}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Box>
-                )}
-              </CardContent>
-              <CardActions>
-                <Button
-                  size="small"
-                  color="info"
-                  startIcon={<InfoIcon />}
-                  onClick={() => setSelected(sub)}
-                >
-                  Details
-                </Button>
-                {sub.status === "pending" && (
-                  <>
-                    <Button
-                      size="small"
-                      color="success"
-                      variant="contained"
-                      startIcon={<CheckIcon />}
-                      onClick={() => handleApprove(sub.id)}
-                    >
-                      Approve
-                    </Button>
-                    <Button
-                      size="small"
-                      color="error"
-                      variant="outlined"
-                      startIcon={<CloseIcon />}
-                      onClick={() => setRejectId(sub.id)}
-                    >
-                      Reject
-                    </Button>
-                  </>
-                )}
-              </CardActions>
-            </Card>
-          </Grid>
+          <Card key={sub.id} className="shadow-lg">
+            <CardContent className="pb-4 pt-6 px-6">
+              <div className="text-lg font-bold mb-1">{sub.repoName}</div>
+              <div className="text-muted-foreground">Submitted By: {sub.submittedBy}</div>
+              <div className="text-muted-foreground mb-1">Submitted At: {sub.submittedAt}</div>
+              <div className="mt-1">
+                {sub.status === "rejected" && sub.rejectionReason
+                  ? <span className="text-destructive">Rejected ({sub.rejectionReason})</span>
+                  : <span className="text-primary">{sub.status.charAt(0).toUpperCase() + sub.status.slice(1)}</span>
+                }
+              </div>
+              {sub.status === "approved" && (
+                <div className="mt-4">
+                  <Select
+                    value={sub.showcaseWeek || ""}
+                    onValueChange={(val: string) => handleSchedule(sub.id, val)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Week" />
+                    </SelectTrigger>
+
+                    <SelectContent>
+                      {weeks.map(week => (
+                      <SelectItem key={week} value={week}>{week}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>  
+              )}
+            </CardContent>
+            <CardFooter className="gap-2 flex flex-row">
+              <Button variant="outline" size="sm" onClick={() => setSelected(sub)}>
+                <Info className="mr-2 h-4 w-4" />
+                Details
+              </Button>
+              {sub.status === "pending" && (
+                <>
+                  <Button variant="default" size="sm" onClick={() => handleApprove(sub.id)}>
+                    <Check className="mr-2 h-4 w-4" />
+                    Approve
+                  </Button>
+                  <Button variant="destructive" size="sm" onClick={() => setRejectId(sub.id)}>
+                    <X className="mr-2 h-4 w-4" />
+                    Reject
+                  </Button>
+                </>
+              )}
+            </CardFooter>
+          </Card>
         ))}
-      </Grid>
+      </div>
 
       {/* Scheduled Submissions Grouped by Week */}
-      <Box mt={6}>
-        <Typography variant="h5" sx={{ mb: 2 }}>
-          Scheduled Submissions
-        </Typography>
-        <Paper elevation={1} sx={{ p: 3, background: "transparent" }}>
+      <div className="mt-10">
+        <div className="text-2xl font-semibold mb-4">Scheduled Submissions</div>
+        <div className="bg-muted rounded-lg p-3">
           {weeks.map(week => {
             const scheduled = submissions.filter(sub => sub.showcaseWeek === week);
             return (
-              <Box key={week} mb={3}>
-                <Typography variant="h6" sx={{ mb: 1 }}>{week}</Typography>
-                <Divider sx={{ mb: 1 }} />
+              <div key={week} className="mb-4">
+                <div className="text-lg font-bold mb-1">{week}</div>
+                <div className="border-b mb-1" />
                 {scheduled.length === 0 ? (
-                  <Typography variant="body2" color="text.secondary" fontStyle="italic">
+                  <div className="text-sm text-muted-foreground italic">
                     No submissions scheduled.
-                  </Typography>
+                  </div>
                 ) : (
-                  <ul style={{ margin: 0, paddingLeft: 20 }}>
+                  <ul className="ml-4">
                     {scheduled.map(sub => (
                       <li key={sub.id}>
-                        <strong>{sub.repoName}</strong> (by {sub.submittedBy}, submitted: {sub.submittedAt})
+                        <span className="font-semibold">{sub.repoName}</span> (by {sub.submittedBy}, submitted: {sub.submittedAt})
                       </li>
                     ))}
                   </ul>
                 )}
-              </Box>
+              </div>
             );
           })}
-        </Paper>
-      </Box>
+        </div>
+      </div>
 
       {/* Modals */}
       <SubmissionModal
@@ -214,7 +172,7 @@ const SubmissionTable: React.FC = () => {
           if (rejectId !== null) handleReject(rejectId, reason);
         }}
       />
-    </Box>
+    </div>
   );
 };
 

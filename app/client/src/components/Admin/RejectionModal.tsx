@@ -1,4 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "../ui/dialog";
 
 interface RejectionModalProps {
   isOpen: boolean;
@@ -6,52 +13,56 @@ interface RejectionModalProps {
   onReject: (reason: string) => void;
 }
 
-const RejectionModal: React.FC<RejectionModalProps> = ({ isOpen, onClose, onReject }) => {
+const RejectionModal: React.FC<RejectionModalProps> = ({
+  isOpen,
+  onClose,
+  onReject,
+}) => {
   const [reason, setReason] = useState("");
 
-  if (!isOpen) return null;
+  // Reset reason when the modal opens/closes
+  useEffect(() => {
+    if (!isOpen) setReason("");
+  }, [isOpen]);
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0, left: 0, width: "100vw", height: "100vh",
-        background: "rgba(0,0,0,0.4)", zIndex: 10000, display: "flex", alignItems: "center", justifyContent: "center"
-      }}
-    >
-      <div
-        style={{
-          background: "#18181b",
-          color: "#fff",
-          borderRadius: 8,
-          padding: 24,
-          minWidth: 300,
-          maxWidth: "95vw"
-        }}
-      >
-        <h3>Reject Submission</h3>
+    <Dialog open={isOpen} onOpenChange={(open: boolean) => { if (!open) onClose(); }}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Reject Submission</DialogTitle>
+        </DialogHeader>
         <textarea
           rows={3}
           placeholder="Enter rejection reason..."
           value={reason}
           onChange={(e) => setReason(e.target.value)}
-          style={{ width: "100%", marginBottom: 12, resize: "vertical" }}
+          className="w-full mb-4 rounded border bg-muted px-2 py-2 resize-vertical text-foreground"
         />
-        <div>
+        <DialogFooter>
           <button
+            className="bg-destructive text-destructive-foreground px-4 py-1 rounded hover:bg-destructive/90 disabled:opacity-50"
             onClick={() => {
               onReject(reason);
               setReason("");
             }}
-            style={{ marginRight: 12 }}
             disabled={!reason.trim()}
+            type="button"
           >
             Submit
           </button>
-          <button onClick={onClose}>Cancel</button>
-        </div>
-      </div>
-    </div>
+          <button
+            className="bg-muted text-foreground px-4 py-1 rounded hover:bg-muted/70"
+            onClick={() => {
+              setReason("");
+              onClose();
+            }}
+            type="button"
+          >
+            Cancel
+          </button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 
