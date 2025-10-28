@@ -50,7 +50,7 @@ const showcaseSubmissionSchema = new mongoose.Schema(
             trim: true,
         },
         metadata: {
-            type: object,
+            type: Object,
             default: {},
         },
     },
