@@ -6,6 +6,7 @@ import Navbar from '@/components/Layout/Navbar'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft } from 'lucide-react'
 import type { FileStatus } from '@/utils/api'
+import { Link } from 'react-router-dom'
 
 const Landing = () => {
     const [showFiles, setShowFiles] = useState(false)
@@ -33,18 +34,18 @@ const Landing = () => {
             <div className="sticky top-0 z-50 backdrop-blur py-2 bg-background/80">
                 <Navbar />
             </div>
-            
+
+
             {/* Main content area with slide-up transition */}
-            <div 
-                className={`transition-all duration-300 ease-out ${
-                    showFiles ? 'space-y-4' : 'space-y-20'
-                }`}
+            <div
+                className={`transition-all duration-300 ease-out pt-18 ${showFiles ? 'space-y-4' : 'space-y-20'
+                    }`}
             >
                 {/* Back button - shows when files are visible */}
                 {showFiles && (
                     <div className="px-4 md:px-0 animate-in fade-in duration-300">
-                        <Button 
-                            variant="ghost" 
+                        <Button
+                            variant="ghost"
                             onClick={handleBackToHero}
                             className="flex items-center gap-2"
                         >
@@ -53,29 +54,27 @@ const Landing = () => {
                         </Button>
                     </div>
                 )}
-                
+
                 {/* Hero section - slides up and fades out */}
-                <div 
-                    className={`transition-all duration-300 ease-out ${
-                        showFiles 
-                            ? 'opacity-0 -translate-y-full h-0 overflow-hidden pointer-events-none' 
+                <div
+                    className={`transition-all duration-300 ease-out ${showFiles
+                            ? 'opacity-0 -translate-y-full h-0 overflow-hidden pointer-events-none'
                             : 'opacity-100 translate-y-0 h-auto'
-                    }`}
+                        }`}
                 >
                     <Hero />
                 </div>
-                
+
                 {/* GitHub input - hidden when files are shown */}
-                <div 
-                    className={`transition-all duration-300 ease-out ${
-                        showFiles 
-                            ? 'opacity-0 -translate-y-full h-0 overflow-hidden pointer-events-none' 
+                <div
+                    className={`transition-all duration-300 ease-out ${showFiles
+                            ? 'opacity-0 -translate-y-full h-0 overflow-hidden pointer-events-none'
                             : 'opacity-100 translate-y-0 h-auto'
-                    }`}
+                        }`}
                 >
                     <GithubInput onFilesReady={handleFilesReady} />
                 </div>
-                
+
                 {/* Files section - only shown when files are ready */}
                 {showFiles && files && (
                     <div className="px-4 md:px-0">
@@ -83,7 +82,20 @@ const Landing = () => {
                     </div>
                 )}
             </div>
-            
+            <div className='text-center m-8'>
+                <Link
+                    to={"/login"}
+                    className="
+                        text-gray-500 text-xl hover:text-gray-900 dark:text-gray-400 dark:hover:text-white
+                        font-bold  tracking-wide
+                        transition-colors duration-200
+                        border-b border-transparent hover:border-current
+                    "
+                >
+                    Login
+                </Link>
+            </div>
+
             <div className="mt-auto pt-20">
                 <Footer />
             </div>
